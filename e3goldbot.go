@@ -147,33 +147,40 @@ func main() {
 	queue := make(map[int]func(telebot.Message) (msg string, err error))
 	for message := range messages {
 		log.Println(message.Sender.ID, message.Sender.Username, message.Text)
-		if v, ok := queue[message.Sender.ID]; ok {
-			msg, err := v(message)
-			if err != nil {
-				bot.SendMessage(message.Chat, err.Error(), nil)
+		switch message.Text {
+		case "/help":
+			s, _ := HelpCommand(message)
+			bot.SendMessage(message.Chat, s, nil)
+			delete(queue, message.Sender.ID)
+			break
+		case "/now":
+			s, _ := NowCommand(message)
+			bot.SendMessage(message.Chat, s, nil)
+			delete(queue, message.Sender.ID)
+			break
+		case "/setsell":
+			queue[message.Sender.ID] = SetSellCommand
+			bot.SendMessage(message.Chat, "請輸入想要賣出的數字", nil)
+			break
+		case "/setbuy":
+			queue[message.Sender.ID] = SetBuyCommand
+			bot.SendMessage(message.Chat, "請輸入想要買入的數字", nil)
+			break
+		default:
+
+			if v, ok := queue[message.Sender.ID]; ok {
+				msg, err := v(message)
+				if err != nil {
+					bot.SendMessage(message.Chat, err.Error(), nil)
+				} else {
+					bot.SendMessage(message.Chat, msg, nil)
+					delete(queue, message.Sender.ID)
+				}
 			} else {
-				bot.SendMessage(message.Chat, msg, nil)
-				delete(queue, message.Sender.ID)
+
+				bot.SendMessage(message.Chat, "請輸入正確指令", nil)
 			}
-		} else {
-			switch message.Text {
-			case "/help":
-				s, _ := HelpCommand(message)
-				bot.SendMessage(message.Chat, s, nil)
-				break
-			case "/now":
-				s, _ := NowCommand(message)
-				bot.SendMessage(message.Chat, s, nil)
-				break
-			case "/setsell":
-				queue[message.Sender.ID] = SetSellCommand
-				bot.SendMessage(message.Chat, "請輸入想要賣出的數字", nil)
-				break
-			case "/setbuy":
-				queue[message.Sender.ID] = SetBuyCommand
-				bot.SendMessage(message.Chat, "請輸入想要買入的數字", nil)
-				break
-			}
+			break
 		}
 
 	}
