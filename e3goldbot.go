@@ -27,10 +27,6 @@ var (
 	token        = flag.String("t", "", "input telegram bot token")
 )
 
-type Commander interface {
-	Execute(text string) (string, error)
-}
-
 func SetBuyCommand(m telebot.Message) (msg string, err error) {
 	cmd := "INSERT INTO e3gold(uid,type,price,date) VALUES (?,?,?,?)"
 	tx, err := db.Begin()
