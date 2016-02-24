@@ -11,6 +11,6 @@
 
 `./e3goldbot -t {token}`
 
-## How di I create a bot ?
+## How did I create a bot ?
 
 [Telegram Bot Document](https://core.telegram.org/bots#3-how-do-i-create-a-bot)
